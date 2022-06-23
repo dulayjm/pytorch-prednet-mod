@@ -1,19 +1,23 @@
-import hickle as hkl
-
 import torch
 import torch.utils.data as data
-
-
+import h5py 
 
 class KITTI(data.Dataset):
     def __init__(self, datafile, sourcefile, nt):
         self.datafile = datafile
         self.sourcefile = sourcefile
-        self.X = hkl.load(self.datafile)
-        self.sources = hkl.load(self.sourcefile)
+        self.X = h5py.File(self.datafile, 'r')
+        self.sources = h5py.File(self.sourcefile, 'r')
         self.nt = nt
         cur_loc = 0
         possible_starts = []
+
+        my_array = self.X['data_0'][()]
+        self.X = my_array 
+
+        sources_array = self.sources['data_0'][()]
+        self.sources = sources_array
+
         while cur_loc < self.X.shape[0] - self.nt + 1:
             if self.sources[cur_loc] == self.sources[cur_loc + self.nt - 1]:
                 possible_starts.append(cur_loc)

@@ -55,6 +55,8 @@ class PredNet(nn.Module):
         batch_size = input.size(0)
 
         for l in range(self.n_layers):
+            # E_seq[l] = Variable(torch.zeros(batch_size, 2*self.a_channels[l], w, h))
+            # R_seq[l] = Variable(torch.zeros(batch_size, self.r_channels[l], w, h))
             E_seq[l] = Variable(torch.zeros(batch_size, 2*self.a_channels[l], w, h)).cuda()
             R_seq[l] = Variable(torch.zeros(batch_size, self.r_channels[l], w, h)).cuda()
             w = w//2
@@ -64,6 +66,7 @@ class PredNet(nn.Module):
         
         for t in range(time_steps):
             A = input[:,t]
+            # A = A.type(torch.FloatTensor)
             A = A.type(torch.cuda.FloatTensor)
             
             for l in reversed(range(self.n_layers)):

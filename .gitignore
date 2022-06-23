@@ -1,4 +1,6 @@
 __pycache__
 .vscode
-kitti_env/
 kitti_data/
+env/
+
+train_the_kitti.o*
