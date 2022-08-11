@@ -17,6 +17,8 @@ class KITTI(data.Dataset):
 
         sources_array = self.sources['data_0'][()]
         self.sources = sources_array
+        print('self.sources', self.sources)
+        print('self.sources.shape', self.sources.shape)
 
         while cur_loc < self.X.shape[0] - self.nt + 1:
             if self.sources[cur_loc] == self.sources[cur_loc + self.nt - 1]:
@@ -25,6 +27,9 @@ class KITTI(data.Dataset):
             else:
                 cur_loc += 1
         self.possible_starts = possible_starts
+
+        print('self.possible_starts', self.possible_starts)
+        print('len self.possible_starts', len(self.possible_starts))
 
     def __getitem__(self, index):
         loc = self.possible_starts[index]

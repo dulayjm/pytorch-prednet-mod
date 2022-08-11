@@ -46,8 +46,13 @@ kitti_val = KITTI(val_file, val_sources, nt)
 train_loader = DataLoader(kitti_train, batch_size=batch_size, shuffle=True)
 val_loader = DataLoader(kitti_val, batch_size=batch_size, shuffle=True)
 
-model = PredNet(R_channels, A_channels, output_mode='error')
+#model = PredNet(R_channels, A_channels, output_mode='error')
+#model = model.to(device)
+
+model = PredNet(R_channels, A_channels, output_mode='prediction')
+model.load_state_dict(torch.load('training.pt'))
 model = model.to(device)
+
 optimizer = torch.optim.Adam(model.parameters(), lr=lr)
 
 print('the model is,',  model)
@@ -59,8 +64,36 @@ def lr_scheduler(optimizer, epoch):
         for param_group in optimizer.param_groups:
             param_group['lr'] = 0.0001
         return optimizer
+1/0
+# load test ewights 
 
+# test script stuff
+for i, inputs in enumerate(val_loader):
+    inputs = inputs.permute(0, 1, 4, 2, 3) # batch x time_steps x channel x width x height
+    print('inputs shape we need, ', inputs.shape)
 
+    print('inputs we need,1 ', inputs[1])
+    print('inputs we need,1 ', inputs[1].shape)
+    inputs = Variable(inputs.to(device))
+    origin = inputs.data.cpu().byte()[:, nt-1]
+    print('origin:')
+    print(type(origin))
+    print(origin.size())
+    print('origin shape we need', origin.shape)
+
+    1/0
+    print('predicted:')
+    pred = model(inputs)
+    pred = pred.data.cpu().byte()
+    print(type(pred))
+    print(pred.size())
+    origin = torchvision.utils.make_grid(origin, nrow=4)
+    pred = torchvision.utils.make_grid(pred, nrow=4)
+    save_image(origin, 'origin.jpg')
+    save_image(pred, 'predicted.jpg')
+    break
+
+1/0
 
 for epoch in range(num_epochs):
     optimizer = lr_scheduler(optimizer, epoch)
@@ -80,4 +113,4 @@ for epoch in range(num_epochs):
         optimizer.step()
 
 
-torch.save(model.state_dict(), 'kitti_training.pt')
+#torch.save(model.state_dict(), 'kitti_training.pt')
